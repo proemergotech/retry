@@ -29,7 +29,7 @@ exampleHTTPClient := client.NewExampleHTTPClient(
     gentleman.New().BaseURL(
         fmt.Sprintf("%v://%v:%v", cfg.ExampleHTTPClientScheme, cfg.ExampleHTTPClientHost, cfg.ExampleHTTPClientPort),
     ).
-        Use(client.RetryMiddleware(gentlemanretry.BackoffTimeout(10*time.Second), gentlemanretry.Logger(logger), gentlemanretry.RequestTimeout(2*time.Second))),
+        Use(client.Middleware(gentlemanretry.BackoffTimeout(10*time.Second), gentlemanretry.Logger(logger), gentlemanretry.RequestTimeout(2*time.Second))),
 )
 ```
 
