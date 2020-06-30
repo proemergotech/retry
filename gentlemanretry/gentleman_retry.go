@@ -2,6 +2,7 @@ package gentlemanretry
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,7 +13,6 @@ import (
 	"gitlab.com/proemergotech/errors"
 	"gitlab.com/proemergotech/retry"
 	"gitlab.com/proemergotech/retry/backoff"
-	"golang.org/x/net/context"
 	gcontext "gopkg.in/h2non/gentleman.v2/context"
 	"gopkg.in/h2non/gentleman.v2/plugin"
 )
