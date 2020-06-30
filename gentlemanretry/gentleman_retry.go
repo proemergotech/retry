@@ -35,8 +35,8 @@ type transport struct {
 	logResponse    bool
 }
 
-// RetryMiddleware returns a gentleman plugin implementing retry logic for http requests implementing http round tripper interface.
-func RetryMiddleware(options ...Option) plugin.Plugin {
+// Middleware returns a gentleman plugin implementing retry logic for http requests implementing http round tripper interface.
+func Middleware(options ...Option) plugin.Plugin {
 	return plugin.NewPhasePlugin("before dial", func(gctx *gcontext.Context, handler gcontext.Handler) {
 		t := &transport{
 			evaluator:      defaultEvaluator,
