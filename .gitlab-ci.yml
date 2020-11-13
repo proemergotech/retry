@@ -7,10 +7,17 @@ stages:
 
 lint:
   stage: build
-  image: golangci/golangci-lint:latest-alpine
+  image: golangci/golangci-lint:v1.32.2-alpine
   script:
-    - golangci-lint run -v --timeout 2m --out-format tab -c .golangci.yml
-  allow_failure: true
+    - apk --no-cache add git jq
+    # Write the code coverage report to gl-code-quality-report.json
+    # and print linting issues to stdout in the format: path/to/file:line description
+    - golangci-lint run -v --timeout 2m --out-format code-climate -c .golangci.yml | tee gl-code-quality-report.json | jq -r '.[] | "\(.location.path):\(.location.lines.begin) \(.description)"'
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+    paths:
+      - gl-code-quality-report.json
 
 test:
   stage: build
