@@ -148,6 +148,12 @@ func (t *transport) retry(req *http.Request, body []byte, done <-chan struct{}, 
 
 		if body != nil {
 			req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+			req.GetBody = func() (io.ReadCloser, error) {
+				if t.loggingEnabled {
+					t.logger.Debug(req.Context(), "GetBody called on request")
+				}
+				return ioutil.NopCloser(bytes.NewBuffer(body)), nil
+			}
 		}
 
 		res, err := t.transport.RoundTrip(req)

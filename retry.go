@@ -6,4 +6,5 @@ import "context"
 type Logger interface {
 	Error(ctx context.Context, msg string, keysAndValues ...interface{})
 	Warn(ctx context.Context, msg string, keysAndValues ...interface{})
+	Debug(ctx context.Context, msg string, keysAndValues ...interface{})
 }
