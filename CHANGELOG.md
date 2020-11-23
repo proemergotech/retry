@@ -1,5 +1,8 @@
 # Release Notes
 
+## v1.1.1 / 2020-11-23
+- migrated to GitHub
+
 ## v1.1.0 / 2020-11-13
 - set GetBody on request for retries in gentlemanretry
 

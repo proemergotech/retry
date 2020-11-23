@@ -10,11 +10,12 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"gitlab.com/proemergotech/errors"
-	"gitlab.com/proemergotech/retry"
-	"gitlab.com/proemergotech/retry/backoff"
+	"github.com/proemergotech/errors"
 	gcontext "gopkg.in/h2non/gentleman.v2/context"
 	"gopkg.in/h2non/gentleman.v2/plugin"
+
+	"github.com/proemergotech/retry"
+	"github.com/proemergotech/retry/backoff"
 )
 
 var noopCancel = func() {}

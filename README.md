@@ -9,7 +9,7 @@ Currently only exponential backoff is implemented as a retry logic.
 2. Run go build/run/tidy
 
 ```bash
-go get -u gitlab.com/proemergotech/retry v1.0.0
+go get -u github.com/proemergotech/retry v1.0.0
 ```
 
 ## Usage
@@ -41,9 +41,9 @@ Private repos don't show up on godoc.org so you have to run it locally.
 godoc -http=":6060"
 ```
 
-Then open http://localhost:6060/pkg/gitlab.com/proemergotech/retry/
+Then open http://localhost:6060/pkg/github.com/proemergotech/retry/
 
 ## Development
 
 - install go
-- check out project to: $GOPATH/src/gitlab.com/proemergotech/retry
+- check out project to: $GOPATH/src/github.com/proemergotech/retry
