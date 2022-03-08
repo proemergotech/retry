@@ -10,7 +10,9 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/proemergotech/errors"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
+	"github.com/proemergotech/errors/v2"
 	gcontext "gopkg.in/h2non/gentleman.v2/context"
 	"gopkg.in/h2non/gentleman.v2/plugin"
 
@@ -30,6 +32,7 @@ type transport struct {
 	gctx           *gcontext.Context
 	backoffTimeout time.Duration
 	requestTimeout time.Duration
+	tracer         opentracing.Tracer
 	logger         retry.Logger
 	loggingEnabled bool
 	logRequest     bool
@@ -120,6 +123,13 @@ func Logger(logger retry.Logger) Option {
 	}
 }
 
+// Tracer enables tracing and span creation on every retry.
+func Tracer(tracer opentracing.Tracer) Option {
+	return func(t *transport) {
+		t.tracer = tracer
+	}
+}
+
 // LogRequest returns an option which will enable the logging of requests using httputil.DumpResponse.
 func LogRequest() Option {
 	return func(t *transport) {
@@ -157,7 +167,7 @@ func (t *transport) retry(req *http.Request, body []byte, done <-chan struct{}, 
 			}
 		}
 
-		res, err := t.transport.RoundTrip(req)
+		res, err := t.roundTrip(req, retryCount)
 		r, err := t.evaluator(err, req, res)
 		if !r {
 			return res, err
@@ -202,6 +212,40 @@ func (t *transport) retry(req *http.Request, body []byte, done <-chan struct{}, 
 			return nil, err
 		}
 	}
+}
+
+func (t *transport) roundTrip(req *http.Request, retryCount int) (*http.Response, error) {
+	if t.tracer != nil {
+		if parent := opentracing.SpanFromContext(req.Context()); parent != nil {
+			opts := []opentracing.StartSpanOption{
+				ext.SpanKindRPCClient,
+				opentracing.ChildOf(parent.Context()),
+			}
+
+			if d, ok := req.Context().Deadline(); ok {
+				opts = append(opts, opentracing.Tags{
+					"context_deadline_exists":   true,
+					"context_deadline":          d.UTC().Round(time.Microsecond).Format(time.RFC3339Nano),
+					"context_deadline_duration": d.UTC().Sub(time.Now().UTC()).String(),
+				})
+			} else {
+				opts = append(opts, opentracing.Tag{
+					Key:   "context_deadline_exists",
+					Value: false,
+				})
+			}
+
+			span := t.tracer.StartSpan(
+				fmt.Sprintf("retry %d", retryCount),
+				opts...,
+			)
+			defer span.Finish()
+
+			req = req.WithContext(opentracing.ContextWithSpan(req.Context(), span))
+		}
+	}
+
+	return t.transport.RoundTrip(req)
 }
 
 func defaultEvaluator(err error, req *http.Request, res *http.Response) (bool, error) {
