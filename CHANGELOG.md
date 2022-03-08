@@ -9,6 +9,9 @@
 ## v1.2.0 / 2020-12-03
 - add tracing for gentlemanretry
 
+## v1.1.1 / 2020-11-23
+- migrated to GitHub
+
 ## v1.1.0 / 2020-11-13
 - set GetBody on request for retries in gentlemanretry
 
